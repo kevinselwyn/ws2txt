@@ -22,26 +22,16 @@
 #include <stdlib.h>
 
 #if !defined(__APPLE__)
-#include <malloc.h>
+	#include <malloc.h>
 #endif
 
 #define VERSION "1.0.1"
 
-void fclose_if(FILE **resource) {
-	if (*resource) {
-		fclose(*resource);
-	}
-}
-
-void free_if(char **resource) {
-	if (*resource) {
-		free(*resource);
-	}
-}
-
 int main(int argc, char *argv[]) {
-	int i, ch, rc = 0, echo = 1, input_size, output_size;
-	char *input_filename, *output_filename, *input_text = NULL, *output_text = NULL;
+	int rc = 0, i = 0, ch = 0, echo = 1;
+	size_t input_size = 0, output_size = 0;
+	char *input_filename = NULL, *output_filename = NULL;
+	char *input_text = NULL, *output_text = NULL;
 	FILE *input = NULL, *output = NULL;
 
 	if (argc < 2) {
@@ -63,11 +53,11 @@ int main(int argc, char *argv[]) {
 		goto cleanup;
 	}
 
-	fseek(input, 0, SEEK_END);
-	input_size = ftell(input);
-	fseek(input, 0, SEEK_SET);
+	(void)fseek(input, 0, SEEK_END);
+	input_size = (size_t)ftell(input);
+	(void)fseek(input, 0, SEEK_SET);
 
-	if (!input_size || input_size == 0) {
+	if (input_size == 0) {
 		printf("%s is empty\n", input_filename);
 		rc = 1;
 		goto cleanup;
@@ -88,8 +78,8 @@ int main(int argc, char *argv[]) {
 		goto cleanup;
 	}
 
-	for (i = 0, output_size = 0; i < input_size; i++) {
-		ch = input_text[i];
+	for (i = 0, output_size = 0; i < (int)input_size; i++) {
+		ch = (int)input_text[i];
 
 		if (ch == 26) {
 			continue;
@@ -99,7 +89,7 @@ int main(int argc, char *argv[]) {
 			ch = (ch + 256) % 128;
 		}
 
-		output_text[output_size++] = ch;
+		output_text[output_size++] = (char)ch;
 	}
 
 	if (echo == 0) {
@@ -121,18 +111,28 @@ int main(int argc, char *argv[]) {
 		goto cleanup;
 	}
 
-	if (echo && output) {
+	if (echo != 0 && output != NULL) {
 		printf("\n");
 	} else {
 		printf("Wrote file %s\n", output_filename);
 	}
 
 cleanup:
-	free_if(&input_text);
-	free_if(&output_text);
+	if (input) {
+		(void)fclose(input);
+	}
 
-	fclose_if(&input);
-	fclose_if(&output);
+	if (output) {
+		(void)fclose(output);
+	}
+
+	if (input_text) {
+		free(input_text);
+	}
+
+	if (output_text) {
+		free(output_text);
+	}
 
 	return rc;
 }

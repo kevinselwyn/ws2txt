@@ -1,23 +1,23 @@
-NAME   := ws2txt
-BINDIR := /usr/local/bin
+NAME    := ws2txt
+BIN_DIR := /usr/local/bin
 
-all: $(NAME)
+all: build
 
-$(NAME): $(NAME).c
-	gcc -o $@ $<
+build: $(NAME).c
+	gcc -Wall -Wextra -o $(NAME) $<
 
 test: $(NAME)
 	./$(NAME) EXAMPLE.DOC EXAMPLE.TXT
 
 memcheck:
-	gcc $(NAME).c -o $(NAME) -O0 -g
-	valgrind $(NAME)
+	gcc -o $(NAME) $(NAME).c -O0 -g
+	valgrind ./$(NAME) EXAMPLE.DOC EXAMPLE.TXT
 
-install: $(NAME)
-	install -m 0755 $< $(BINDIR)
+install:
+	install -m 0755 $< $(BIN_DIR)
 
 uninstall:
-	rm -f $(BINDIR)/$(NAME)
+	rm -f $(BIN_DIR)/$(NAME)
 
 clean:
-	rm $(NAME) EXAMPLE.TXT
+	rm -f $(NAME) EXAMPLE.TXT
