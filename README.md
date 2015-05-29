@@ -17,7 +17,8 @@ make && sudo make install
 ##Usage
 
 ```bash
-ws2txt <in.doc> <out.txt>
+Usage: ws2txt <in.doc> [<out.txt>]
+              [-h,--help]
 ```
 
 Note: If no output is specified, the program will output to stdout.

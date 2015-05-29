@@ -9,11 +9,7 @@ build: $(NAME).c
 test: $(NAME)
 	./$(NAME) EXAMPLE.DOC EXAMPLE.TXT
 
-memcheck:
-	gcc -o $(NAME) $(NAME).c -O0 -g
-	valgrind ./$(NAME) EXAMPLE.DOC EXAMPLE.TXT
-
-install:
+install: $(NAME)
 	install -m 0755 $< $(BIN_DIR)
 
 uninstall:
